@@ -1,0 +1,6 @@
+
+= Introduction
+
+This repository is used to store bits of code I write that aren't big enough to warrant their own repo, as well as code used in blog posts.
+
+
