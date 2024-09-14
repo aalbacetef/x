@@ -122,7 +122,7 @@ const ConvError = error{
     NotSuccessful,
     DictReturnedNull,
     CouldNotDecodeRect,
-    UnicodeEncodingFailed,
+    UTF8EncodingFailed,
 };
 
 fn rectFrom(dict: C.CFDictionaryRef, rect_ptr: *Rect) !void {
@@ -175,15 +175,17 @@ fn strFrom(
     key: ?*const anyopaque,
 ) !?[]u8 {
     const raw_val = C.CFDictionaryGetValue(dict, key);
+    const encoding = C.kCFStringEncodingUTF8;
+
     if (raw_val) |v| {
         const raw: C.CFStringRef = @ptrCast(v);
-        const len = 4 * C.CFStringGetLength(raw);
+        const chars = C.CFStringGetLength(raw);
+        const len = C.CFStringGetMaximumSizeForEncoding(chars, encoding) + 1;
         const n: usize = @intCast(len);
         const s: []u8 = try alloc.alloc(u8, n);
-        const _ptr: [*]u8 = @ptrCast(s);
 
-        if (C.CFStringGetCString(raw, _ptr, len, C.kCFStringEncodingUTF8) == 0) {
-            return ConvError.UnicodeEncodingFailed;
+        if (C.CFStringGetCString(raw, s.ptr, len, encoding) == 0) {
+            return ConvError.UTF8EncodingFailed;
         }
 
         return s;
