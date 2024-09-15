@@ -41,7 +41,7 @@ pub const WindowList = struct {
         }
     }
 
-    pub fn print(self: WindowList) void {
+    pub fn debug(self: WindowList) void {
         C.CFShow(self.ref);
     }
 
@@ -49,8 +49,6 @@ pub const WindowList = struct {
         C.CFRelease(self.ref);
     }
 };
-
-const Rect = struct { w: f64, h: f64, x: f64, y: f64 };
 
 pub const Window = struct {
     alpha: f64,
@@ -124,6 +122,8 @@ const ConvError = error{
     CouldNotDecodeRect,
     UTF8EncodingFailed,
 };
+
+const Rect = struct { w: f64, h: f64, x: f64, y: f64 };
 
 fn rectFrom(dict: C.CFDictionaryRef, rect_ptr: *Rect) !void {
     const bounds_ref = C.CFDictionaryGetValue(dict, C.kCGWindowBounds);
